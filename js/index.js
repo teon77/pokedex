@@ -1,4 +1,4 @@
-//const { default: axios } = require("axios");
+
 
 const BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
 const TYPE_URL = "https://pokeapi.co/api/v2/type/";
@@ -15,8 +15,6 @@ const submitBtn = document.getElementById("submitBtn");
 const clearBtn = document.getElementById("clearBtn");
 const input = document.getElementById("input");
 
-const types = document.getElementById("types")
-
 // use API
 const getFromApi = async (inputtedName) => {
     try {
@@ -30,13 +28,11 @@ const getFromApi = async (inputtedName) => {
     }
 }
 
-const getTypesFromApi = async (types) => {
-    let y
+const getPokeList = async (type) => {
     try {
-        for(let type of types){
-            const res = await axios.get(`${TYPE_URL}${type}`)
-        }
-        
+        const res = await axios.get(`${TYPE_URL}${type}`);
+        console.log(res.data.pokemon);
+        createDOMPokeList(res.data.pokemon);
     } catch (error) {
         console.error(error);
     }
@@ -53,7 +49,7 @@ const assignValues = (data) => {
 charName.textContent += data.name;
 charHeight.textContent += data.height;
 charWeight.textContent += data.weight;
-charTypes.textContent += getTypesFromApi(data.types);
+charTypes.innerHTML += getTypes(data.types).join(", ");
 
 frontImage = data.sprites.front_default     // used for Image turn
 charImage.src = frontImage;                 
@@ -61,6 +57,10 @@ backImage = data.sprites.back_default;      // used for Image turn
 
 }
 
+const getTypes = (typesArr) => {
+    console.log(typesArr);
+    return typesArr.map(cell => (`<button onclick="getPokeList('${cell.type.name}')" class= "pokeType">${cell.type.name}</button>`));
+}
 
 const clearValues = () => {
 charName.textContent = "Name: ";
@@ -68,6 +68,23 @@ charHeight.textContent = "Height: ";
 charWeight.textContent = "Weight: ";
 charTypes.textContent = "Types: ";
 }
+
+const createDOMPokeList = (pokeArr) => {
+    let list = document.createElement("ul");
+    list.classList.add("pokeList");
+    for (let i = 0; i < pokeArr.length; i++) {
+        // Create the list item:
+        let pokeListItem = document.createElement('li');
+
+        // Set its contents:
+        pokeListItem.innerHTML += `<button onclick="getFromApi('${pokeArr[i].pokemon.name}')" class= "pokeType">${pokeArr[i].pokemon.name}</button>`;
+
+        // Add it to the list:
+        list.appendChild(pokeListItem);
+    }
+   document.body.appendChild(list);
+}
+
 
 // eventListeners
 submitBtn.addEventListener("click", getInputtedValue)
@@ -83,4 +100,3 @@ charImage.addEventListener("mouseover", () => {
 charImage.addEventListener("mouseout", () => {
     charImage.src = frontImage;
 })
-
