@@ -16,10 +16,9 @@ const clearBtn = document.getElementById("clearBtn");
 const input = document.getElementById("input");
 
 // use API
-const getFromApi = async (inputtedName) => {
+const getPokemonFromApi = async (inputtedName) => {
     try {
         const response = await axios.get(`${BASE_URL}${inputtedName}`);
-        console.log(response);
         assignValues(response.data);
     }
     catch (error) {
@@ -31,8 +30,7 @@ const getFromApi = async (inputtedName) => {
 const getPokeList = async (type) => {
     try {
         const res = await axios.get(`${TYPE_URL}${type}`);
-        console.log(res.data.pokemon);
-        createDOMPokeList(res.data.pokemon);
+        createDOMListSection(res.data.pokemon);
     } catch (error) {
         console.error(error);
     }
@@ -41,7 +39,7 @@ const getPokeList = async (type) => {
 // extra Functions
 const getInputtedValue = () => {
     if(input.value === "") alert("PLease insert Some text");
-    getFromApi(input.value);
+    getPokemonFromApi(input.value);
 }
 
 const assignValues = (data) => {
@@ -58,7 +56,6 @@ backImage = data.sprites.back_default;      // used for Image turn
 }
 
 const getTypes = (typesArr) => {
-    console.log(typesArr);
     return typesArr.map(cell => (`<button onclick="getPokeList('${cell.type.name}')" class= "pokeType">${cell.type.name}</button>`));
 }
 
@@ -69,22 +66,75 @@ charWeight.textContent = "Weight: ";
 charTypes.textContent = "Types: ";
 }
 
-const createDOMPokeList = (pokeArr) => {
-    let list = document.createElement("ul");
-    list.classList.add("pokeList");
-    for (let i = 0; i < pokeArr.length; i++) {
-        // Create the list item:
-        let pokeListItem = document.createElement('li');
-
-        // Set its contents:
-        pokeListItem.innerHTML += `<button onclick="getFromApi('${pokeArr[i].pokemon.name}')" class= "pokeType">${pokeArr[i].pokemon.name}</button>`;
-
-        // Add it to the list:
-        list.appendChild(pokeListItem);
-    }
-   document.body.appendChild(list);
+const createDOMListSection = (pokeArr) => {
+    const typesSection = document.createElement("section");
+    typesSection.append(createSearchInput());
+    typesSection.append(createCloseBtn())
+    typesSection.append(createDOMList(pokeArr));
+    typesSection.setAttribute("id", "typesSection")
+    document.body.appendChild(typesSection);
 }
 
+const createDOMList = (pokeArr) => {
+    const list = createElement("ul","", [], {id: "pokeList"})
+    for (let i = 0; i < pokeArr.length; i++) {
+        
+        const pokeListButton = createElement("button", pokeArr[i].pokemon.name,  ["pokeType"], {onclick: `getPokemonFromApi('${pokeArr[i].pokemon.name}')`})
+        const pokeListLi = document.createElement("li");
+        pokeListLi.appendChild(pokeListButton)
+        list.appendChild(pokeListLi);
+    }
+   return list;
+}
+
+const createSearchInput = () => {
+  return createElement("input", "", [],
+   {type: "text",
+    placeholder: "search for pokemon here",
+    onkeyup: "filterList(this.value)",
+    id: "search"})
+}
+
+const filterList = (inputValue) => {
+    const searchValue = inputValue.toLowerCase();   // gets the value in lower case
+
+    for ( let pokeElement of document.getElementById("pokeList").children) {    // gets all tasks on the page
+        if(pokeElement.innerText.toLowerCase().includes(searchValue)) {
+            pokeElement.style.display = "list-item";
+           }
+           else{
+            pokeElement.style.display = "none";                     // hides them
+           }
+    }
+          
+}
+
+const createCloseBtn = () => {
+    const closeBtn = createElement("button", "✘", ["closeBtn"], {onclick: "closeSection()"});
+    return closeBtn;
+}
+
+const closeSection = () =>  {
+    document.getElementById("typesSection").remove();
+}
+
+const createElement = (tagName, text=" ", classes = [], attributes = {}) => {
+    const element = document.createElement(tagName);
+    
+    // assigning text
+      element.textContent = text;
+    
+    // For Classes
+    for(const cls of classes) {
+      element.classList.add(cls);
+    }
+  
+    // For Attributes
+    for (const attr in attributes) {
+      element.setAttribute(attr, attributes[attr]);
+    }
+    return element;
+  }
 
 // eventListeners
 submitBtn.addEventListener("click", getInputtedValue)
