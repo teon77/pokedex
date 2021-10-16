@@ -1,0 +1,30 @@
+@import url('http://fonts.cdnfonts.com/css/pokemon-solid');
+
+* {
+    font-family: 'Pokemon Solid', sans-serif;
+}
+
+
+#pokeList {
+    width: 300px;
+    height: 200px;
+    overflow: auto
+}
+
+#search {
+    margin-bottom: 1em;
+}
+
+.closeBtn{
+    margin-left: 1em;
+}
+
+
+#root{
+    margin: 5% 0 0 30%;
+   
+}
+
+#typesSection{
+    margin: 5% 0 0 30%;
+}
