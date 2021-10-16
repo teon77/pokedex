@@ -30,7 +30,7 @@ const getPokemonFromApi = async (inputtedName) => {
 const getPokeList = async (type) => {
     try {
         const res = await axios.get(`${TYPE_URL}${type}`);
-        createDOMListSection(res.data.pokemon);
+        createDOMListSection(res.data.pokemon, type);
     } catch (error) {
         console.error(error);
     }
@@ -66,9 +66,10 @@ charWeight.textContent = "Weight: ";
 charTypes.textContent = "Types: ";
 }
 
-const createDOMListSection = (pokeArr) => {
+const createDOMListSection = (pokeArr, type) => {
+    closeSection();
     const typesSection = document.createElement("section");
-    typesSection.append(createSearchInput());
+    typesSection.append(createSearchInput(type));
     typesSection.append(createCloseBtn())
     typesSection.append(createDOMList(pokeArr));
     typesSection.setAttribute("id", "typesSection")
@@ -78,7 +79,6 @@ const createDOMListSection = (pokeArr) => {
 const createDOMList = (pokeArr) => {
     const list = createElement("ul","", [], {id: "pokeList"})
     for (let i = 0; i < pokeArr.length; i++) {
-        
         const pokeListButton = createElement("button", pokeArr[i].pokemon.name,  ["pokeType"], {onclick: `getPokemonFromApi('${pokeArr[i].pokemon.name}')`})
         const pokeListLi = document.createElement("li");
         pokeListLi.appendChild(pokeListButton)
@@ -87,10 +87,10 @@ const createDOMList = (pokeArr) => {
    return list;
 }
 
-const createSearchInput = () => {
+const createSearchInput = (type) => {
   return createElement("input", "", [],
    {type: "text",
-    placeholder: "search for pokemon here",
+    placeholder: `Search ${type} type Pokemons`,
     onkeyup: "filterList(this.value)",
     id: "search"})
 }
@@ -115,7 +115,11 @@ const createCloseBtn = () => {
 }
 
 const closeSection = () =>  {
+    try{
     document.getElementById("typesSection").remove();
+    } catch {
+        return;
+    }
 }
 
 const createElement = (tagName, text=" ", classes = [], attributes = {}) => {
