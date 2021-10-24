@@ -1,6 +1,6 @@
 
 
-const BASE_URL = "localhost:0808/";
+
 const TYPE_URL = "https://pokeapi.co/api/v2/type/";
 let backImage = "", frontImage ="", pokeId = 0, response;
 
@@ -24,14 +24,14 @@ const releaseBtn = document.getElementById("releaseBtn");
 // use API
 const getPokemonFromApi = async (inputtedName) => {
     try {
-         response = await axios.get(`${BASE_URL}pokemon/get/${inputtedName}`, {
-            Headers: {
+         response = await axios.get(`http://localhost:8080/pokemon/get/${inputtedName}/`, {
+            headers: {
                 'Access-Control-Allow-Origin': "*",
-                'Access-Control-Allow-Headers': "Content-Type",
-                'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE'
+                "username": `eithan`
             }
         });
         pokeId = response.data.id;
+        console.log(response);
         assignValues(response.data);
     }
     catch (error) {
@@ -70,14 +70,14 @@ charHeight.textContent += data.height;
 charWeight.textContent += data.weight;
 charTypes.innerHTML += getTypes(data.types).join(", ");
 
-frontImage = data.sprites.front_default     // used for Image turn
+frontImage = data.front_pic     // used for Image turn
 charImage.src = frontImage;                 
-backImage = data.sprites.back_default;      // used for Image turn
+backImage = data.back_pic;      // used for Image turn
 
 }
 
 const getTypes = (typesArr) => {
-    return typesArr.map(cell => (`<button onclick="getPokeList('${cell.type.name}')" class= "pokeType">${cell.type.name}</button>`));
+    return typesArr.map(cell => (`<button onclick="getPokeList('${cell}')" class= "pokeType">${cell}</button>`));
 }
 
 const clearValues = () => {
@@ -164,7 +164,7 @@ const createElement = (tagName, text=" ", classes = [], attributes = {}) => {
 
 const catchPokemon = async () => {
     try {
-        await axios.put(`${BASE_URL}pokemon/catch/:${pokeId}`, {
+        await axios.put(`http://localhost:8080/pokemon/catch/${response.id}/`, {
             pokeObj: response
          });
          alert("The Pokemon Caught Successfuly")
@@ -176,9 +176,7 @@ const catchPokemon = async () => {
 
 const releasePokemon = async () => {
     try {
-        await axios.delete(`${BASE_URL}pokemon/release/:${pokeId}`, {
-            pokeObj: response
-         });
+        await axios.delete(`http://localhost:8080/pokemon/catch/${response.id}/`);
          alert("The Pokemon Released Successfuly")
     }
     catch (error) {

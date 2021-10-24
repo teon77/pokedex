@@ -11,6 +11,7 @@ const path = require('path');
 const getDataFromPokedex = async (idOrName)=>{
     try{
         apiData= await P.getPokemonByName(`${idOrName}`)
+        pokemonData.id = apiData.id;
         pokemonData.name = apiData.name;
         pokemonData.height = apiData.height, 
         pokemonData.weight = apiData.weight,
@@ -55,11 +56,11 @@ router.get('/get/:id', async function (request, response) {
 router.put('/catch/:id',function (request, response) {
     const username = response.username;
     const { id } = request.params;
-    const pokemonObj = request.body
+    const pokemonObj = request.body;
     const check = fs.existsSync(path.resolve(`users/${username}/${id}.json`));
     if(check){
         throw { status: 403, text: "You have Already caught this pokemon"}
-    }else{
+    }else{s
         fs.writeFile(path.resolve(`users/${username}/${id}.json`), JSON.stringify(pokemonObj),
              (err,data)=> {(err)? console.log(err) : console.log(data)});
         response.send(`${pokemonObj.pokemon.name} pokemon been caught`);
