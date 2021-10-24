@@ -1,10 +1,6 @@
-const { response } = require("express");
-
-const errorHandler = (error, request, response, next) => {
+module.exports.errorHandler = (err, req, res, next) => {
   if(err) {
-      response.send(error);
+      res.send(err);
   }
   next();
 }
-
-  module.exports = errorHandler;

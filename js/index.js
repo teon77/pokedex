@@ -1,8 +1,8 @@
 
 
-const BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
+const BASE_URL = "localhost:0808/";
 const TYPE_URL = "https://pokeapi.co/api/v2/type/";
-let backImage = "", frontImage ="";
+let backImage = "", frontImage ="", pokeId = 0, response;
 
 //  DOM Elements
 const charName = document.getElementById("charName");
@@ -15,10 +15,23 @@ const submitBtn = document.getElementById("submitBtn");
 const clearBtn = document.getElementById("clearBtn");
 const input = document.getElementById("input");
 
+
+const submitUserBtn = document.getElementById("submitUserBtn");
+const userInput = document.getElementById("userInput");
+
+const catchBtn = document.getElementById("catchBtn");
+const releaseBtn = document.getElementById("releaseBtn");
 // use API
 const getPokemonFromApi = async (inputtedName) => {
     try {
-        const response = await axios.get(`${BASE_URL}${inputtedName}`);
+         response = await axios.get(`${BASE_URL}pokemon/get/${inputtedName}`, {
+            Headers: {
+                'Access-Control-Allow-Origin': "*",
+                'Access-Control-Allow-Headers': "Content-Type",
+                'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE'
+            }
+        });
+        pokeId = response.data.id;
         assignValues(response.data);
     }
     catch (error) {
@@ -29,7 +42,12 @@ const getPokemonFromApi = async (inputtedName) => {
 
 const getPokeList = async (type) => {
     try {
-        const res = await axios.get(`${TYPE_URL}${type}`);
+        const res = await axios.get(`${TYPE_URL}${type}`, {
+            Headers: {
+                'Access-Control-Allow-Origin': "*",
+                'Access-Control-Allow-Headers': "Content-Type"
+            }
+        });
         createDOMListSection(res.data.pokemon, type);
     } catch (error) {
         console.error(error);
@@ -38,7 +56,10 @@ const getPokeList = async (type) => {
 
 // extra Functions
 const getInputtedValue = () => {
-    if(input.value === "") alert("PLease insert Some text");
+    if(input.value === "") { 
+      alert("PLease insert Some text");
+      return;
+    }
     getPokemonFromApi(input.value);
 }
 
@@ -140,11 +161,46 @@ const createElement = (tagName, text=" ", classes = [], attributes = {}) => {
     return element;
   }
 
+
+const catchPokemon = async () => {
+    try {
+        await axios.put(`${BASE_URL}pokemon/catch/:${pokeId}`, {
+            pokeObj: response
+         });
+         alert("The Pokemon Caught Successfuly")
+    }
+    catch (error) {
+        console.error(error);
+    }
+}
+
+const releasePokemon = async () => {
+    try {
+        await axios.delete(`${BASE_URL}pokemon/release/:${pokeId}`, {
+            pokeObj: response
+         });
+         alert("The Pokemon Released Successfuly")
+    }
+    catch (error) {
+        console.error(error);
+    }
+}
+
+
+
+
 // eventListeners
 submitBtn.addEventListener("click", getInputtedValue)
+catchBtn.addEventListener("click", catchPokemon)
+releaseBtn.addEventListener("click", releasePokemon)
 
 clearBtn.addEventListener("click", () => {
     input.value = "";
+    charName.textContent = "Name: ";
+    charHeight.textContent = "Height: " 
+    charWeight.textContent = "Weight: " ;
+    charTypes.innerHTML ="Types: "
+    charImage.src = "";                 
 })
 
 charImage.addEventListener("mouseover", () => {

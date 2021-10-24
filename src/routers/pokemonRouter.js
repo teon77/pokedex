@@ -6,9 +6,6 @@ const pokemonData = require('../pokemon-data');
 const fs = require('fs');
 const fsp = require('fs/promises');
 const path = require('path');
-const bp = require('body-parser')
-router.use(bp.json())
-router.use(bp.urlencoded({ extended: true }))
 
 
 const getDataFromPokedex = async (idOrName)=>{
@@ -28,16 +25,18 @@ const getDataFromPokedex = async (idOrName)=>{
 }
 
 
-
-router.get('/', async function (request, response) {
-    const pokemonsArray =[];
-    const  username = response.username;
-    const files = await fsp.readdir(path.resolve(`users/${username}`));  
-    for(let file of files){
-        const fileData = await fsp.readFile(path.resolve(`users/${username}/${file}`));
-        pokemonsArray.push(JSON.parse(fileData.toString()).pokemon);
-    }
-    response.json(pokemonsArray);
+router.get('/', async function (request, response, next) {
+    try {
+        const pokemonsArray = [];
+        const files = await fsp.readdir(path.resolve(`users/${username}`));  
+        for(let file of files){
+            const fileData = await fsp.readFile(path.resolve(`users/${username}/${file}`));
+            pokemonsArray.push(JSON.parse(fileData.toString()).pokemon);
+        }
+        res.json(pokemonsArray);
+        } catch(error) {
+            next(error);
+        }  
 })
 
 router.get('/query', async function (request, response) {
@@ -59,14 +58,13 @@ router.put('/catch/:id',function (request, response) {
     const pokemonObj = request.body
     const check = fs.existsSync(path.resolve(`users/${username}/${id}.json`));
     if(check){
-        throw {status: 403, text: "You have Already caught this pokemon"}
+        throw { status: 403, text: "You have Already caught this pokemon"}
     }else{
         fs.writeFile(path.resolve(`users/${username}/${id}.json`), JSON.stringify(pokemonObj),
              (err,data)=> {(err)? console.log(err) : console.log(data)});
         response.send(`${pokemonObj.pokemon.name} pokemon been caught`);
     }
 })
-
 
 router.delete('/release/:id',function (request, response) {
     const username = response.username;
@@ -80,10 +78,5 @@ router.delete('/release/:id',function (request, response) {
         throw { status: 403, text: "Oops, You dont have this pokemon"};
     }
 })
-
-
-
-
-
 
 module.exports = router;

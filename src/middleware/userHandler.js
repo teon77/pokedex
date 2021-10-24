@@ -1,13 +1,18 @@
-const userMiddleware = async function(request, response, next) {
-    const username = request.headers.username;
-    if(username){
-        response.username=username;
-        next();
-    }else{
-        response.status(401).send({ message: 'username header is missing '});
+const fs = require("fs");
+const path = require("path");
+
+module.exports.usersHandler = (req, res, next) => {
+   const { username } = req.headers;
+   if(!username) {
+       throw { status: 401, text: "username header is missing, example for header: username: Eithan"}
+   }
+
+   const userPath = path.resolve(path.join("/users", username));
+    if(!fs.existsSync(userPath)) {
+        res.send("Please Sign Up")
+    } 
+    else {
+      req.username = username;
+      next();
     }
 }
-
-module.exports = userMiddleware;
-
-

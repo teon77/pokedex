@@ -21,10 +21,22 @@
     <div id="root">
         <div class="App">
             <h1>Pokedex</h1>
+            <div id="userSection">
+                <input type="text" value="" placeholder="Please Enter Your Name" id="userInput">
+                <button type="button" id="submitUserBtn">submit</button>
+            </div>
+            <br>
             <div>
-                <input type="text" value="" placeholder="Enter Pokemon Name" id="input">
-                <button type="button" id="submitBtn">search pokemon</button>
-                <button id="clearBtn" type="button">Clear</button>
+                <div id="searchSection">
+                    <input type="text" value="" placeholder="Enter Pokemon Name" id="input">
+                    <button type="button" id="submitBtn">search pokemon</button>
+                    <button id="clearBtn" type="button">Clear</button>
+                </div>
+                <br>
+                <div id="optionSection">
+                    <button id="catchBtn" type="button">Catch Pokemon</button>
+                    <button id="releaseBtn" type="button">Release Pokemon</button>
+                </div>
                 <div class="details-div">
                     <ul>
                         <li id="charName">Name: </li>

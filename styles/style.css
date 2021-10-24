@@ -5,6 +5,17 @@
 }
 
 
+#userSection{
+    margin-bottom: 10em;
+}
+
+#searchSection{
+    margin-bottom: 2em;
+}
+
+#optionSection{
+    margin-bottom: 5em;
+}
 #pokeList {
     width: 300px;
     height: 200px;
