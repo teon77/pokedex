@@ -1,6 +1,3 @@
-
-
-
 const TYPE_URL = "https://pokeapi.co/api/v2/type/";
 let backImage = "", frontImage ="", pokeId = 0, response;
 
